@@ -1,0 +1,86 @@
+.fashion-slider {
+  width: 100%;
+  overflow: hidden;
+  margin: 80px 0;
+  position: relative;
+}
+
+.slider-track {
+  display: flex;
+  width: max-content;
+  animation: slide 40s linear infinite;
+}
+
+.slide {
+  flex: 0 0 auto;
+  width: 320px;
+  height: 420px;
+  margin-right: 20px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fashion-slider:hover .slider-track {
+  animation-play-state: paused;
+}
+.fashion-slider::before,
+.fashion-slider::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 80px;
+  height: 100%;
+  z-index: 2;
+}
+
+.fashion-slider::before {
+  left: 0;
+  background: linear-gradient(to right, #fff, transparent);
+}
+
+.fashion-slider::after {
+  right: 0;
+  background: linear-gradient(to left, #fff, transparent);
+}
+
+
+/* smooth continuous animation */
+@keyframes slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (max-width: 1024px) {
+  .slide {
+    width: 260px;
+    height: 360px;
+  }
+
+  .slider-track {
+    animation-duration: 35s;
+  }
+}
+@media (max-width: 768px) {
+  .fashion-slider {
+    margin: 50px 0;
+  }
+
+  .slide {
+    width: 220px;
+    height: 300px;
+    margin-right: 14px;
+  }
+
+  .slider-track {
+    animation-duration: 30s;
+  }
+}
