@@ -11,10 +11,34 @@ import FashionSlider from "./components/FashionSlider";
 export default function App() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState("womens-dresses");
+  const [category, setCategory] = useState("all");
+  const [visibleCount, setVisibleCount] = useState(8); // 👈 NEW
   const productsRef = useRef(null);
+
+  const CATEGORY_MAP = {
+    women: 1, // clothes
+    accessories: 4, // shoes
+    men: 1, // clothes
+    all: null,
+  };
+
+  const CATEGORY_LIMITS = {
+    women: 8,
+    accessories: 6,
+    men: 8,
+    all: 12,
+  };
+  const ALL_FASHION_CATEGORIES = [
+    "womens-dresses",
+    "womens-jewellery",
+    "womens-bags",
+    "mens-shirts",
+    "mens-shoes",
+  ];
+
   const handleCategoryClick = (cat) => {
     setCategory(cat);
+    setVisibleCount(CATEGORY_LIMITS[cat] || 8);
 
     setTimeout(() => {
       productsRef.current?.scrollIntoView({
@@ -24,107 +48,163 @@ export default function App() {
     }, 100);
   };
 
+  // useEffect(() => {
+  //   //setLoading(true);
+
+  //   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  //   const categoryId = CATEGORY_MAP[category];
+
+  //   const url = categoryId
+  //     ? `${API_BASE_URL}/products?categoryId=${categoryId}&limit=30`
+  //     : `${API_BASE_URL}/products?limit=30`;
+
+  //   fetch(url)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       const products = data.map((item) => ({
+  //         id: item.id,
+  //         name: item.title,
+  //         price: item.price,
+  //         oldPrice: item.price + Math.floor(Math.random() * 50),
+  //         inStock: true,
+  //         image: item.images?.[0],
+  //         isNew: Math.random() > 0.5,
+  //         discount: Math.floor(Math.random() * 10) + 1,
+  //       }));
+
+  //       setItems(products);
+  //       setLoading(false);
+  //     })
+  //     .catch(() => {
+  //       setItems([]);
+  //       setLoading(false);
+  //     });
+  // }, [category]);
   useEffect(() => {
-  const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+    setLoading(true);
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-  fetch(`${VITE_API_BASE_URL}/products/category/${category}?limit=30`)
-    .then((res) => res.json())
-    .then((data) => {
-      const sanitizedProducts = data.products.map((item) => ({
-        id: item.id,
-        name: item.title,
-        price: item.price,
-        oldPrice: item.price + Math.floor(Math.random() * 50),
-        inStock: item.stock > 0,
-        image: item.images?.[0] || item.thumbnail,
-        isNew: Math.random() > 0.5,
-        discount: Math.floor(Math.random() * 10) + 1,
-      }));
+    const fetchProducts = async () => {
+      try {
+        let url = `${API_BASE_URL}/products?offset=0&limit=50`;
 
-      setItems(sanitizedProducts);
-      setLoading(false);
-    })
-    .catch(() => {
-      setItems([]);
-      setLoading(false);
-    });
-}, [category]);
+        if (category !== "all") {
+          const categoryId = CATEGORY_MAP[category];
+          url = `${API_BASE_URL}/products?categoryId=${categoryId}&offset=0&limit=30`;
+        }
 
+        const res = await fetch(url);
+        const data = await res.json();
+
+        setItems(
+          data.map((item) => ({
+            id: item.id,
+            name: item.title,
+            price: item.price,
+            oldPrice: item.price + Math.floor(Math.random() * 50),
+            inStock: true,
+            image: item.images?.[0],
+            isNew: Math.random() > 0.5,
+            discount: Math.floor(Math.random() * 10) + 1,
+          })),
+        );
+      } catch (err) {
+        console.error(err);
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [category]);
 
   return (
-    <>
-      <div className="app-content">
-        <FashionBackground />
-        <Header />
+    <div className="app-content">
+      <FashionBackground />
+      <Header />
 
-        {/* Hero Section - Full Width */}
-        {/* Hero Section - Full Width */}
-        <div className="hero-section">
-          <div
-            className="hero-card women"
-            onClick={() => handleCategoryClick("womens-dresses")}
-            style={{
-              backgroundImage:
-                "url('https://htmldemo.net/reid/reid/assets/img/bg/banner29.jpg')",
-            }}
-          >
-            <span>#For Women</span>
-            <p>Sale 10% Off Almost Everything</p>
-          </div>
-
-          <div
-            className="hero-card accessories"
-            onClick={() => handleCategoryClick("womens-bags")}
-            style={{
-              backgroundImage:
-                "url('https://htmldemo.net/reid/reid/assets/img/bg/banner30.jpg')",
-            }}
-          >
-            <span>#Accessories</span>
-            <p>Sale 40% Off Almost Everything</p>
-          </div>
-
-          <div
-            className="hero-card men"
-            onClick={() => handleCategoryClick("mens-shirts")}
-            style={{
-              backgroundImage:
-                "url('https://htmldemo.net/reid/reid/assets/img/bg/banner31.jpg')",
-            }}
-          >
-            <span>#For Men</span>
-            <p>Big Sale of Final Sale Item. Caught in the moment! </p>
-          </div>
+      {/* HERO SECTION */}
+      <div className="hero-section">
+        <div
+          className="hero-card women"
+          onClick={() => handleCategoryClick("women")}
+          style={{
+            backgroundImage:
+              "url('https://htmldemo.net/reid/reid/assets/img/bg/banner29.jpg')",
+          }}
+        >
+          <span>#For Women</span>
+          <p>Sale 10% Off Almost Everything</p>
         </div>
 
-        {/* Products Section - Constrained Width */}
-        <div className="content-container" ref={productsRef}>
-          <h2 className="section-title">Our Products</h2>
-          <p className="section-subtitle">
-            Contemporary, minimal and modern designs
-          </p>
+        <div
+          className="hero-card accessories"
+          onClick={() => handleCategoryClick("accessories")}
+          style={{
+            backgroundImage:
+              "url('https://htmldemo.net/reid/reid/assets/img/bg/banner30.jpg')",
+          }}
+        >
+          <span>#Accessories</span>
+          <p>Sale 40% Off Almost Everything</p>
+        </div>
 
-          {loading && (
+        <div
+          className="hero-card men"
+          onClick={() => handleCategoryClick("men")}
+          style={{
+            backgroundImage:
+              "url('https://htmldemo.net/reid/reid/assets/img/bg/banner31.jpg')",
+          }}
+        >
+          <span>#For Men</span>
+          <p>Big Sale of Final Sale Item</p>
+        </div>
+      </div>
+
+      {/* PRODUCTS */}
+      <div className="content-container" ref={productsRef}>
+        <h2 className="section-title">Our Products</h2>
+        <p className="section-subtitle">
+          Contemporary, minimal and modern designs
+        </p>
+
+        {loading && (
+          <div className="grid">
+            {[...Array(8)].map((_, i) => (
+              <Skeleton key={i} />
+            ))}
+          </div>
+        )}
+
+        {!loading && items.length === 0 && <EmptyState />}
+
+        {!loading && items.length > 0 && (
+          <>
             <div className="grid">
-              {[...Array(8)].map((_, i) => (
-                <Skeleton key={i} />
-              ))}
-            </div>
-          )}
-
-          {!loading && items.length === 0 && <EmptyState />}
-
-          {!loading && items.length > 0 && (
-            <div className="grid">
-              {items.map((product) => (
+              {items.slice(0, visibleCount).map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
-          )}
-        </div>
-        <FashionSlider />
-        <Footer />
+
+            {/* SHOW MORE BUTTON */}
+            {visibleCount < items.length && (
+              <div className="show-more-wrapper">
+                <button
+                  className="show-more-btn"
+                  onClick={() => setVisibleCount((v) => v + 6)}
+                >
+                  Show More
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
-    </>
+
+      <FashionSlider />
+      <Footer />
+    </div>
   );
 }
