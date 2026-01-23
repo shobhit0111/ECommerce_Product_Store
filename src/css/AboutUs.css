@@ -1,0 +1,91 @@
+.about-section {
+  padding: 100px 60px;
+  background: #fafafa;
+}
+
+.about-title {
+  text-align: center;
+  font-size: 2.6rem;
+  margin-bottom: 80px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.about-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
+/* Card Base */
+.about-card {
+  display: flex;
+  max-width: 900px;
+  padding: 40px;
+  border-radius: 18px;
+  background: rgb(249, 182, 182);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s ease;
+}
+
+.about-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+}
+
+/* Zig Zag */
+.about-card.left {
+  align-self: flex-start;
+}
+
+.about-card.right {
+  align-self: flex-end;
+}
+
+/* Content */
+.about-content h3 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.about-content p {
+  font-size: 1.5rem;
+  line-height: 1.7;
+  color: #131313;
+}
+
+/* ---------- TABLET ---------- */
+@media (max-width: 1024px) {
+  .about-section {
+    padding: 80px 40px;
+  }
+
+  .about-card {
+    max-width: 100%;
+  }
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 768px) {
+  .about-section {
+    padding: 60px 20px;
+  }
+
+  .about-title {
+    font-size: 2rem;
+    margin-bottom: 50px;
+  }
+
+  .about-card {
+    padding: 30px;
+    align-self: center !important;
+  }
+
+  .about-content h3 {
+    font-size: 1.5rem;
+  }
+
+  .about-content p {
+    font-size: 0.95rem;
+  }
+}

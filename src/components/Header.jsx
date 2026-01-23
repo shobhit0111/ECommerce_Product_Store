@@ -1,186 +1,105 @@
-// import React, { useState, useEffect, useRef } from "react";
-// import "../css/Header.css";
-// import { useCart } from "../context/CartContext";
-
-// export default function Header() {
-//   const [isScrolled, setIsScrolled] = useState(false);
-//   const [openCart, setOpenCart] = useState(false);
-//   const cartRef = useRef(null);
-
-//   const { cartItems, totalItems, removeFromCart } = useCart();
-
-//   // Sticky header on scroll
-//   useEffect(() => {
-//     const onScroll = () => {
-//       setIsScrolled(window.scrollY > 20);
-//     };
-//     window.addEventListener("scroll", onScroll);
-//     return () => window.removeEventListener("scroll", onScroll);
-//   }, []);
-
-//   // Close cart when clicking outside
-//   useEffect(() => {
-//     const handleClickOutside = (e) => {
-//       if (cartRef.current && !cartRef.current.contains(e.target)) {
-//         setOpenCart(false);
-//       }
-//     };
-//     document.addEventListener("mousedown", handleClickOutside);
-//     return () => document.removeEventListener("mousedown", handleClickOutside);
-//   }, []);
-
-//   return (
-//     <header className={`header ${isScrolled ? "scrolled" : ""}`}>
-//       {/* Left */}
-//       <div className="header-left">
-//         <input
-//           type="text"
-//           placeholder="Search products..."
-//           className="search-input"
-//         />
-//       </div>
-
-//       {/* Center */}
-//       <div className="header-center">
-//         <h1>Product Store</h1>
-//       </div>
-
-//       {/* Right */}
-//       <div className="header-right" ref={cartRef}>
-//         <button className="login-btn">Login / SignUp</button>
-
-//         {/* Cart Button */}
-//         <button
-//           className="cart-btn"
-//           onClick={() => setOpenCart((prev) => !prev)}
-//         >
-//           🛒
-//           {totalItems > 0 && <span className="cart-count">{totalItems}</span>}
-//         </button>
-
-//         {/* Cart Dropdown */}
-//         {openCart && (
-//           <div className="cart-dropdown">
-//             <h4>My Cart</h4>
-
-//             {cartItems.length === 0 && (
-//               <p className="empty-cart">Cart is empty</p>
-//             )}
-
-//             {cartItems.map((item) => (
-//               <div key={item.id} className="cart-item">
-//                 <img src={item.image} alt={item.name} />
-//                 <div>
-//                   <p className="cart-name">{item.name}</p>
-//                   <p className="cart-price">
-//                     ₹{item.price} × {item.qty}
-//                   </p>
-//                 </div>
-//                 <button
-//                   className="remove-btn"
-//                   onClick={() => removeFromCart(item.id)}
-//                 >
-//                   ✕
-//                 </button>
-//               </div>
-//             ))}
-
-//             {cartItems.length > 0 && (
-//               <button className="checkout-btn">Checkout</button>
-//             )}
-//           </div>
-//         )}
-//       </div>
-//     </header>
-//   );
-// }
-
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "../css/Header.css";
 import { useCart } from "../context/CartContext";
 
-export default function Header() {
+export default function Header({ children }) {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [openCart, setOpenCart] = useState(false);
-  const cartRef = useRef(null);
+  const [openMenu, setOpenMenu] = useState(false);
 
-  const { cartItems, totalItems, removeFromCart } = useCart();
+  const menuRef = useRef(null);
+  const navigate = useNavigate();
 
-  // Sticky header
+  const { cartCount } = useCart();
+
+  /* ================= Sticky Header ================= */
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close cart when clicking outside
+  /* ================= Close menu on outside click ================= */
   useEffect(() => {
     const handleOutside = (e) => {
-      if (cartRef.current && !cartRef.current.contains(e.target)) {
-        setOpenCart(false);
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setOpenMenu(false);
       }
     };
     document.addEventListener("mousedown", handleOutside);
     return () => document.removeEventListener("mousedown", handleOutside);
   }, []);
 
+  /* ================= Menu Actions ================= */
+  const goHome = () => {
+    navigate("/");
+    setOpenMenu(false);
+  };
+
+  const goProducts = () => {
+    navigate("/Products");
+    setOpenMenu(false);
+  };
+
+  const scrollToAbout = () => {
+    document.getElementById("about-us")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const scrollToContact = () => {
+    document.getElementById("footer")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <header className={`header ${isScrolled ? "scrolled" : ""}`}>
-      {/* Left */}
-      <div className="header-left">
-        <input className="search-input" placeholder="Search products..." />
-      </div>
+    <>
+      <header className={`header ${isScrolled ? "scrolled" : ""}`}>
+        {/* LEFT */}
+        <div className="header-left" ref={menuRef}>
+          <button
+            className={`menu-btn ${openMenu ? "active" : ""}`}
+            onClick={() => setOpenMenu(!openMenu)}
+          >
+            {openMenu ? "✕" : "☰"}
+          </button>
 
-      {/* Center */}
-      <div className="header-center">
-        <h1>Product Store</h1>
-      </div>
+          {openMenu && (
+            <div className="menu-dropdown">
+              <button onClick={goHome}>Home</button>
+              <button onClick={goProducts}>Products</button>
+              <button onClick={scrollToAbout}>About Us</button>
+              <button onClick={scrollToContact}>Contact Us</button>
+            </div>
+          )}
 
-      {/* Right */}
-      <div className="header-right" ref={cartRef}>
-        <button className="login-btn">Login / SignUp</button>
+          <input className="search-input" placeholder="Search products..." />
+        </div>
 
-        {/* Cart Button */}
-        <button className="cart-btn" onClick={() => setOpenCart(!openCart)}>
-          🛒
-          {totalItems > 0 && <span className="cart-count">{totalItems}</span>}
-        </button>
+        {/* CENTER */}
+        <div className="header-center">
+          <h1 onClick={goHome} style={{ cursor: "pointer" }}>
+            Fashion Store
+          </h1>
 
-        {/* Cart Dropdown */}
-        {openCart && (
-          <div className="cart-dropdown">
-            <h4>My Cart</h4>
+          <nav className="nav-menu">
+            <button onClick={goHome}>Home</button>
+            <button onClick={goProducts}>Products</button>
+            <button onClick={scrollToAbout}>About Us</button>
+            <button onClick={scrollToContact}>Contact Us</button>
+          </nav>
+        </div>
 
-            {cartItems.length === 0 && (
-              <p className="empty-cart">Your cart is empty</p>
-            )}
+        {/* RIGHT */}
+        <div className="header-right">
+          <button className="login-btn">Login / SignUp</button>
 
-            {cartItems.map((item) => (
-              <div className="cart-item" key={item.id}>
-                <img src={item.image} alt={item.name} />
+          {/* Cart Button → Redirect only */}
+          <button className="cart-btn" onClick={() => navigate("/cart")}>
+            🛒
+            {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+          </button>
+        </div>
+      </header>
 
-                <div className="cart-info">
-                  <p className="cart-name">{item.name}</p>
-                  <p className="cart-price">
-                    ₹{item.price} × {item.qty}
-                  </p>
-                </div>
-
-                <button
-                  className="remove-btn"
-                  onClick={() => removeFromCart(item.id)}
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-
-            {cartItems.length > 0 && (
-              <button className="checkout-btn">Checkout</button>
-            )}
-          </div>
-        )}
-      </div>
-    </header>
+      <main>{children}</main>
+    </>
   );
 }

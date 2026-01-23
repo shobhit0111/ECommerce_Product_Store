@@ -1,3 +1,6 @@
+#footer{
+  scroll-margin-top: 95px;
+}
 .footer {
   background: #fff;
   border-top: 1px solid #eee;
@@ -6,12 +9,24 @@
 
 /* Top section */
 .footer-top {
+  /* display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px; */
+  padding: 60px 80px;
+}
+.footer-title {
+  
+  text-align: center;
+  font-size: 2.6rem;
+  margin-bottom: 80px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.footer-columns {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 40px;
-  padding: 60px 80px;
 }
-
 .footer-col h4 {
   font-size: 16px;
   margin-bottom: 16px;
@@ -102,8 +117,11 @@
 /* 📱 Mobile Responsive */
 @media (max-width: 900px) {
   .footer-top {
-    grid-template-columns: repeat(2, 1fr);
+    /* grid-template-columns: repeat(2, 1fr); */
     padding: 40px 20px;
+  }
+  .footer-columns {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .footer-bottom {
@@ -117,5 +135,12 @@
 @media (max-width: 500px) {
   .footer-top {
     grid-template-columns: 1fr;
+  }
+  .footer-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-title {
+    font-size: 22px;
   }
 }
